@@ -1,0 +1,76 @@
+File created by Lysander Miller
+
+===== DAYTIME =====
+
+1) 
+	1	192.168.152.128		129.6.15.28	TCP	41594 → 13 [SYN] Seq=0 Win=64240 Len=0 MSS=1460 SACK_PERM TSval=1191222935 TSecr=0 WS=128
+
+	2	129.6.15.28	192.168.152.128		TCP	13 → 41594 [SYN, ACK] Seq=0 Ack=1 Win=64240 Len=0 MSS=1460
+	
+	3	192.168.152.128		129.6.15.28	TCP	41594 → 13 [ACK] Seq=1 Ack=1 Win=64240 Len=0
+
+2) Port 41594 
+
+3) The client needs a port so that, when the daytime server wants to send a message to the nc client, it knows what piece of software on the client machine to direct its message to. 
+
+4) 4	129.6.15.28	192.168.152.128		DAYTIME		DAYTIME Response
+
+5) The content of the frame is explained as following (using information and explanations from https://www.nist.gov/pml/time-and-frequency-division/time-distribution/internet-time-service-its): 
+
+60202 23-09-15 15:48:06 50 0 0 710.8 UTC(NIST) *
+ 
+60202 is the Modified Julian Date -- the number of days it has been since noon of January 4713 B.C. (Julian Day zero). 
+
+23-09-15 is the date.
+
+15:48:06 is the time as UTC (Coordinated Universal Time).
+
+50 is the two digit code (0-99) that indicates whether the United States is on standard time or Daylight Savings Time. 50 means DST is in effect.
+
+The first 0 is a one-digit code that indicates whether a leap second will be added or subtracted just before UTC midnight (not local midnight) on the last day of the current month. Because it's a 0, no leap second will occur this month.
+
+The next 0 is a health digit that indicates the health of the server. 0 means healthy so the daytime server is currently healthy.
+
+710.8 is the number of milliseconds that NIST advances the time code to partially compensate for network delays. The advance value should be subtracted from the hh:mm:ss time tag. The result will generally be the correct time within ±0.1 s.
+
+UTC(NIST) indicates we are recieving Coordinated Universal Time (UTC) from the National Institute of Standards and Technology (NIST).
+
+* is the OTM (on time marker). The time values sent by the time code refer to the arrival time of the OTM. In other words, if the time code says it is 12:45:45, this means it is (12:45:45 – msADV) UTC when the OTM arrives.
+
+6) [SYN] means that it's a syn (synchronize) packet. This is a type of packet which indicates the beginning of communication between the client and the server.
+
+7) [ACK] means that it's a ack (acknowledgement) packet. This packet basically says "I have recieved your message."
+
+8) [FIN] means that it's a fin (finish) packet. When this packet is sent, it's indicating the end of communication between the client and the server.
+
+9) The nc client initiated the closing of the TCP connection. We know this because the following packet, which was sent from the nc client to the daytime server, contains the [FIN] flag:
+
+	5	192.168.152.128		129.6.15.28	TCP	41594 → 13 [FIN, ACK] Seq=1 Ack=53 Win=64188 Len=0
+
+===== HTTP =====
+
+1) Two TCP connections were opened. The first TCP connection (between port 60696 on the nc client and port 80 on Jeff's server) was opened with the following packets:
+
+	1	192.168.152.128		45.79.89.123	TCP	60696 → 80 [SYN] Seq=0 Win=64240 Len=0 MSS=1460 SACK_PERM TSval=1105070497 TSecr=0 WS=128
+
+	3	45.79.89.123		192.168.152.128		TCP	80 → 60696 [SYN, ACK] Seq=0 Ack=1 Win=64240 Len=0 MSS=1460
+
+The second TCP connection (between port 60702 on the nc client and port 80 on Jeff's server) was opened with the following packets:
+
+	2	192.168.152.128		45.79.89.123	TCP	60702 → 80 [SYN] Seq=0 Win=64240 Len=0 MSS=1460 SACK_PERM TSval=1105070498 TSecr=0 WS=128
+
+	5	45.79.89.123		192.168.152.128		TCP	80 → 60702 [SYN, ACK] Seq=0 Ack=1 Win=64240 Len=0 MSS=1460	
+
+We know these are the only TCP connections opened because there were no other packets with [SYN] or [SYN, ACK] flags.
+
+2) Your homepage was requested in the following frame:
+
+	7	192.168.152.128		45.79.89.123	HTTP	GET /index.html HTTP/1.1
+
+3) Your photograph was requested in the following frame:
+
+	11	192.168.152.128		45.79.89.123	HTTP	GET /jeff_square_head.jpg HTTP/1.1
+
+===== QUESTIONS =====
+
+1) Can I see packets sent by other people's machines with wireshark? Is there any sort of security in that regard?  
