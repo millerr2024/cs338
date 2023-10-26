@@ -26,4 +26,3 @@ for password in passwords:
     username = password.split(':')[0]
     hashed_password = password.split(':')[1]
     print(username + ":" + mydict.get(hashed_password))
-    
