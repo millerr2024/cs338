@@ -5,9 +5,7 @@ words = [line.strip().lower() for line in open('words.txt')]
 
 passwords = [line.strip().lower() for line in open('hashes3.txt')]
 
-
-
-numberOfHashes = 0
+#numberOfHashes = 0
 
 for password in passwords:
     username = password.split(':')[0]
@@ -28,9 +26,9 @@ for password in passwords:
 
         digest_as_hex_string = digest_as_hex.decode('utf-8') # type=string
 
-        numberOfHashes += 1
+        #numberOfHashes += 1
 
         if (digest_as_hex_string == hashed_password):
             print(username + ":" + word)
-            print("number of hashes = " + str(numberOfHashes))
+            #print("number of hashes = " + str(numberOfHashes))
             break

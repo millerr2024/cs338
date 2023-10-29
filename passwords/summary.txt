@@ -7,33 +7,97 @@ Time per password cracked: 0.504 / 2734 = 0.00018434528
 Passwords cracked per number of hashes computed: 2734 / 267517 = 0.01021991125
 
 Part 2
-Total time: 35m7.506s
-Number of hashes computed: 1023654649 
-Passwords cracked: 58
-Time per hash computed: 2107.506 / 1023654649 = 0.0000020588
-Time per password cracked: 2107.506 / 58 = 36.3363103448
-Passwords cracked per number of hashes computed: 58 / 1023654649 = 5.66597339e-8
+Total time: 72m5.294s
+Number of hashes computed: 2585800182
+Passwords cracked: 101
+Time per hash computed: 4325.294 / 2585800182 = 0.00000167271
+Time per password cracked: 4325.294 / 101 = 42.8246930693
+Passwords cracked per number of hashes computed: 101 / 2585800182 = 3.90594759e-8
 
 Part 3
 Total time: 8m26.099s
 Number of hashes computed: 368016265 
 Passwords cracked: 2734
-Time per hash computed: [seconds per hash]
-Time per password cracked: [seconds per password]
-Passwords cracked per number of hashes computed: [passwords per hash]
-
-Part 4
-Which software did you use?
-What commands did you issue to do your password-cracking?
-How many passwords did you crack?
-How long did it take?
+Time per hash computed: 506.099 / 368016265 = 0.0000013752
+Time per password cracked: 506.099 / 2734 = 0.18511302121
+Passwords cracked per number of hashes computed: 2734 / 368016265 = 0.00000742901
 
 Analysis:
+
 - Did your time per hash computed change between phases? By what factor? Why?
+
+My time per hash computed did change slightly between phases. In phase 1, my time per hash 
+computed was 0.00000188399. In phase 2, my time per hash computed was 0.00000167271. In 
+phase 3, my time per hash computed was 0.0000013752. 
+
+My time per hash computed changed by a factor of 1.12630999994 between phases 1 and 2, 
+a factor of 1.21633944154 between phases 2 and 3, and a factor of 1.36997527632 between 
+phases 1 and 3.
+
+Why do we see this slight change? While one could argue that a larger hash could take
+more time to compute, phase 1 of this assignment calculated the shortest hashes (only one word 
+and no salt) and it had the longest time per hash computed out of all the other phases. However,
+I will note that the time command only records the time when the entire program finishes. And, 
+in phase 1, all the hashes were computed before the program went through all the hashed user
+passwords and checked if any were equal to the hashes the program computed. Thus, perhaps the 
+time per hash computed was not exactly the time per hash computed for phase 1. But then again,
+one could argue similair things for phases 2 and 3. So, I'm not quite sure why we see this slight
+change between time per hash computed per phase.
+
 - Did your time per password crack change between phases? By what factor? Why?
+
+My time per password crack did change between phases. In phase 1, my time per password crack was 
+0.00018434528. In phase 2, my time per password crack was 42.8246930693. In phase 3, my time per 
+password crack was 0.18511302121.
+
+My time per password crack changed by a factor of 0.00000430464 between phases 1 and 2, 
+a factor of 231.343493771 between phases 2 and 3, and a factor of 0.00099585258 between 
+phases 1 and 3.
+
+The change in time per password crack between phases 1 and 2 can be explained by the fact that,
+in phase 1, there was only 267,516 possible passwords (the number of words in words.txt). Thus,
+there were less possible "guesses" to test. However, for part two, there are 267,516 * 267,516 = 
+71,564,810,256 possible passwords. Thus, calculating a user's password involves "more guesses." 
+
+The change in time per password crack between phases 2 and 3 can be explained by the fact that,
+in phase 3, once you got the salt for a user, you'd only need to guess 267,516 possible salt+word
+combinations for that user. While this is, at worst, about 267,516 "guesses" per user (if we allow
+multiple users to use the same password and they all pick ZZZS as their password), there
+are 2,734 users and 2,734 * 267,516 = 731,388,744 guesses for all users, which is 70,833,421,512 
+less guesses than in phase 2.
+
+Finally, the change in time per password crack between phases 1 and 3 can be explained by the 
+fact that, in part 1, you only had to calculate 267,516 possible hashed passwords and then you
+could test if any user had one of those passwords. However, in part 3, because each user has a
+unique salt, you'd have to calculate 267,516 possible hashed salt+word combinations for each 
+user. 
+
 - Suppose you wanted to precompute all the hashes for each possible password
 so you could just look up the password in a table indexed by the hash. How much
 memory would be required for each phase?
-- How well did hashcat or john do compared to your python program? Give details.
+
+Phase 1: There are 267,516 passwords and thus 267,516 hashes. So, 2(267,516 * 32) + 
+(267,516 * 16) = 21,401,280 bytes
+
+Phase 2: There are 71,564,810,256 possible passwords and thus 71,564,810,256 possible hashes. 
+So, 2(71,564,810,256 * 32) + (71,564,810,256 * 16) = 5.7251848e+12 bytes.
+
+Phase 3: There are 256 possible 8 bit numbers and there are 267,516 words. So, there are
+256 * 267,516 = 68,484,096 possible passwords and thus 68,484,096 possible hashes. So,
+2(68,484,096 * 32) + (68,484,096 * 16) = 5,478,727,680 bytes.
+
 - Give 3-4 reasons we should store password hashes and not the passwords themselves.
 Think in terms of threats, who the attackers might be, etc.
+
+1. If an attacker was someone who had gotten access to a list of hashed user passwords but 
+lacked the time or computing power to calculate large numbers of possible password hashes 
+and check if they matched a user's password, the fact that we store password hashes and not the
+passwords themselves could stop this attacker.
+
+2. I'm not sure when the password is hashed but, if it's before the user sends the password to
+the server they want to log into, this could prevent man/attacker in the middle attacks, as the
+attacker wouldn't get a plaintext password but a hash.
+
+3. Let's say an employee has access to the password database. If the database stores 
+plaintext/non-hashed passwords, the employee could use those passwords to get into users'
+accounts. Storing hashed passwords prevents this from happening.

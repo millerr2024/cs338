@@ -5,7 +5,7 @@ words = [line.strip().lower() for line in open('words.txt')]
 
 passwords = [line.strip().lower() for line in open('hashes2.txt')]
 
-numberOfHashes = 0
+#numberOfHashes = 0
 
 mydict = {
     "fbcc4e1a830c7686e09d4d89ba37367705c118f4f31d8abdb0b5c471df0792d3": "jondich"
@@ -31,8 +31,8 @@ for word1 in words:
 
         digest_as_hex_string = digest_as_hex.decode('utf-8') # type=string
 
-        numberOfHashes += 1
+        #numberOfHashes += 1
 
         if mydict.get(digest_as_hex_string) != None:
             print(mydict.get(digest_as_hex_string) + ":" + word)
-            print("number of hashes:" + str(numberOfHashes))
+            #print("number of hashes: " + str(numberOfHashes))
